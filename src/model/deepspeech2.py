@@ -56,13 +56,19 @@ class DeepSpeech2(nn.Module):
 
         x = self.conv(x)
 
-        # (batch, channels, time, features) -> (batch, time, channels * features)
+        # (batch, channels, features, time) -> (batch, time, channels * features)
         batch_size, channels, time, features = x.size()
-        x = x.permute(0, 2, 1, 3).contiguous().view(batch_size, time, -1)
+        x = x.view(batch_size, time, channels * features)
+        # x.shape: [batch, time, features * channels]
 
         x, _ = self.rnn(x)
 
+        # x.shape: [batch, time, rnn_hidden * 2]
+
         x = self.fc(x)
+
+        # x.shape: [batch, time, n_tokens]
+
         log_probs = nn.functional.log_softmax(x, dim=-1)
 
         log_probs_length = self.transform_input_lengths(spectrogram_length)
@@ -78,7 +84,7 @@ class DeepSpeech2(nn.Module):
         Returns:
             output_lengths (Tensor): adjusted lengths after downsampling
         """
-        for _ in range(2):
+        for _ in range(1):
             input_lengths = (input_lengths + 1) // 2
         return input_lengths // 2
 
