@@ -50,7 +50,9 @@ class DeepSpeech2(nn.Module):
         Returns:
             output (dict): output dict containing log_probs and transformed lengths.
         """
+        # [batch_size, n_feats, time] -> [batch_size, 1, n_feats, time]
         x = spectrogram.unsqueeze(1)
+        x = x.transpose(2, 3)
 
         x = self.conv(x)
 

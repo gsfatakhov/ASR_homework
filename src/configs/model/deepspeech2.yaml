@@ -1,5 +1,5 @@
 _target_: src.model.DeepSpeech2
-n_feats: 128
-n_tokens: 29
+n_feats: 256
+n_tokens: 28
 rnn_hidden: 32
 num_rnn_layers: 2
